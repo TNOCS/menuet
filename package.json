@@ -1,0 +1,39 @@
+{
+  "name": "menuet",
+  "version": "0.0.1",
+  "description": "A client-server application for serving dynamic menus - created to simulate the contribution of cyber or social media analysts in a mission.",
+  "main": "index.js",
+  "typings": "dist/index.d.ts",
+  "bin": "./bin/run.js",
+  "scripts": {
+    "install": "lerna bootstrap --hoist",
+    "build": "lerna run build --parallel",
+    "start": "lerna run start --parallel"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TNOCS/menuet.git"
+  },
+  "keywords": [
+    "menu",
+    "test-bed",
+    "kafka",
+    "simulation",
+    "cyber",
+    "security",
+    "social",
+    "media",
+    "analysts",
+    "game"
+  ],
+  "author": "Erik Vullings <erik.vullings@gmail.com> (http://www.tno.nl)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TNOCS/menuet/issues"
+  },
+  "homepage": "https://github.com/TNOCS/menuet#readme",
+  "devDependencies": {
+    "@types/bluebird": "^3.5.20",
+    "lerna": "^2.9.1"
+  }
+}

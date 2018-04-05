@@ -1,0 +1,126 @@
+author: Erik Vullings
+version: 0.0.1
+menus:
+  - id: cyber
+    title: Cyber analysis
+    logo: ""
+    description: GUI for cyber analysts supporting a mission
+    menuGroups:
+      - id: city
+        title: City
+        description: City related web-sites and services
+      - id: power
+        title: Electricity network
+        description: Hacks related to manipulating the power grid
+      - id: security
+        title: Security services
+        description: Security hacks
+    menuItems:
+      - id: city.hr
+        groupId: city
+        title: Access the personnel files
+        description: Access the personnel files so you can find out about certain people.
+      - id: power.grid
+        groupId: power
+        title: Access the Power Grid
+      - id: power.lights_off
+        groupId: power
+        title: Turn off the street lights
+        isVisible: false
+        multiple: -1
+        actions: power.lights_off
+        conditions:
+          - eventId: power.grid
+          - eventId: power.lights_on
+      - id: power.lights_on
+        groupId: power
+        title: Turn on the street lights
+        isVisible: false
+        multiple: -1
+        actions: power.lights_on
+        conditions:
+          - eventId: power.lights_on
+      - id: security.access
+        groupId: security
+        title: Get access to the local network
+        isVisible: false
+        conditions:
+          - eventId: security.scanned_networks
+            eventType: Inject
+      - id: security.camera_off
+        groupId: security
+        title: Turn off the security cameras
+        isVisible: false
+        multiple: -1
+        actions: security.camera_off
+        conditions:
+          - eventId: security.access
+          - eventId: security.camera_on
+      - id: security.camera_on
+        groupId: security
+        title: Turn on the security cameras
+        isVisible: false
+        multiple: -1
+        actions: security.camera_on
+        conditions:
+          - eventId: security.camera_on
+  - id: social_media
+    title: Social media analysis
+    description: GUI for social media analysts supporting a mission
+    menuGroups:
+      - id: global
+        title: Mood analysis
+        description: Determine the mood towards you
+      - id: personal
+        title: Personal analysis
+        description: Analysing specific people
+    menuItems:
+      - id: global.scan
+        group: global
+        title: Perform mood scan
+        actions: global.scan
+      - id: personal.principal
+        title: Investigate principal of facility
+        actions: personal.principal
+      - id: personal.prisonguard
+        title: Investigate prison guard of facility
+        actions: personal.prisonguard
+
+
+actions:
+  - id: power.lights_off
+    description: Turn the street lights in VBS3 off
+    timeout: 1
+    result:
+      response: Lights are turned off
+      message:
+        type: Inject
+        eventId: power.lights
+        mode: false
+  - id: power.lights_on
+    description: Turn the street lights in VBS3 on
+    timeout: 1
+    result:
+      response: Lights are turned on
+      message:
+        type: Inject
+        eventId: power.lights
+        mode: true
+  - id: security.camera_off
+    description: Turn the security camera off
+    timeout: 1
+    result:
+      response: Security camera turned off
+      message:
+        type: Inject
+        eventId: security.camera
+        mode: false
+  - id: security.camera_on
+    description: Turn the security camera on
+    timeout: 1
+    result:
+      response: Security camera turned on
+      message:
+        type: Inject
+        eventId: security.camera
+        mode: true

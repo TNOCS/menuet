@@ -1,0 +1,4 @@
+.vscode
+node_modules
+packages/menuet-gui
+lerna.json

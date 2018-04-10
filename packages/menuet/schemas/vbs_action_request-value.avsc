@@ -1,0 +1,45 @@
+{
+  "name": "ActionRequest",
+  "namespace": "com.tno.vbs_cis.model",
+  "doc": "Request to make a change to an object or entity present in the VBS Simulation Environment",
+  "type": "record",
+  "fields": [
+    {
+      "name": "requestId",
+      "type": "int",
+      "doc": "Unique identifier of the Action Request"
+    },
+    {
+      "name": "type",
+      "doc": "test",
+      "type": {
+        "name": "RequestType",
+        "type": "enum",
+        "symbols": [ "OPEN", "CLOSE", "ENABLE", "DISABLE" ]
+      }
+    },
+    {
+      "name": "entityId",
+      "doc": "DIS/RPR Entity Identifier struct of the target Entity for this request",
+      "type": {
+        "name": "EntityId",
+        "doc": "DIS/RPR Entity ID struct",
+        "type": "record",
+        "fields": [
+          {
+            "name": "siteId",
+            "type": "int"
+          },
+          {
+            "name": "applicationId",
+            "type": "int"
+          },
+          {
+            "name": "entityId",
+            "type": "int"
+          }
+        ]
+      }
+    }
+  ]
+}

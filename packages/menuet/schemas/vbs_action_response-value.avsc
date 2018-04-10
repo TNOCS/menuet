@@ -1,0 +1,28 @@
+{
+  "name": "ActionResponse",
+  "namespace": "com.tno.vbs_cis.model",
+  "doc": "Response to provide feeedback for an earlier ActionRequest to make a change to an object or entity present in the VBS Simulation Environment",
+  "type": "record",
+  "fields": [
+    {
+      "name": "requestId",
+      "type": "int",
+      "doc": "Unique identifier of the corresponding Action Request"
+    },
+    {
+      "name": "status",
+      "doc": "test",
+      "type": {
+        "name": "RequestStatus",
+        "type": "enum",
+        "symbols": [ "SUCCEEDED", "FAILED", "PENDING" ]
+      }
+    },
+    {
+      "name": "message",
+      "doc": "Optional message indicating the reason for the status response if not succeeded",
+      "type": [ "null", "string" ],
+      "default": null
+    }
+  ]
+}

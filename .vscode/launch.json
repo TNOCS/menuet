@@ -8,9 +8,9 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}\\packages\\menuet-service\\src\\cli.ts",
+      "program": "${workspaceFolder}\\packages\\menuet\\src\\cli.ts",
       "outFiles": [
-        "${workspaceFolder}/packages/menuet-service/dist/**/*.js"
+        "${workspaceFolder}/packages/menuet/dist/**/*.js"
       ]
     }
   ]

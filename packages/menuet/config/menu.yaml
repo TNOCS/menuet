@@ -27,7 +27,6 @@ menus:
         groupId: power
         title: Turn off the street lights
         isVisible: false
-        multiple: -1
         actions: power.lights_off
         conditions:
           - eventId: power.grid
@@ -36,7 +35,6 @@ menus:
         groupId: power
         title: Turn on the street lights
         isVisible: false
-        multiple: -1
         actions: power.lights_on
         conditions:
           - eventId: power.lights_on

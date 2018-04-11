@@ -1,12 +1,12 @@
 import { MenuServiceFactory } from './services/menu-service-factory';
-import express from 'express';
-import { Application } from 'express';
+import express, { Request } from 'express';
+import { Application, Response } from 'express';
 import socketIO from 'socket.io';
 import cors from 'cors';
 import chokidar from 'chokidar';
 import { ICommandOptions } from './cli';
 import { createServer, Server } from 'http';
-import { MenuService } from '../dist/services/menu-service';
+import { MenuService } from './services/menu-service';
 
 const log = console.log;
 
@@ -28,6 +28,7 @@ export class App {
     this.server = createServer(this.app);
     this.io = socketIO(this.server);
     this.createMenus();
+    this.listen();
     if (options.watch) {
       const watcher = chokidar.watch(options.file, { persistent: true });
       watcher
@@ -42,6 +43,9 @@ export class App {
       console.info('Menu configuration updated... reloading...');
     }
     this.menuServices = this.menuServiceFactory.create(this.options.file, this.app);
+    if (this.menuServices) {
+      this.app.get('/menus', (req: Request, res: Response) => this.menuServices ? res.json(this.menuServices.map(ms => ms.id)) : res.status(500).write('No menus have been defined!') );
+    }
   }
 
   private listen(): void {

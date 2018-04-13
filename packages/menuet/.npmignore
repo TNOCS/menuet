@@ -8,3 +8,4 @@ package-lock.json
 yarn.lock
 tsconfig.json
 tslint.json
+packages/menuet-gui

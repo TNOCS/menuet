@@ -1,12 +1,12 @@
-import { MenuServiceFactory } from './services/menu-service-factory';
-import express, { Request } from 'express';
-import { Application, Response } from 'express';
+import express, { Application, Request, Response } from 'express';
 import socketIO from 'socket.io';
 import cors from 'cors';
 import chokidar from 'chokidar';
 import { ICommandOptions } from './cli';
 import { createServer, Server } from 'http';
 import { MenuService } from './services/menu-service';
+import { NotificationService } from './services/notification-service';
+import { MenuServiceFactory } from './helpers/menu-service-factory';
 
 const log = console.log;
 
@@ -15,13 +15,14 @@ export class App {
   /** Port number where the service listens for clients */
   private readonly port: number;
   private readonly menuServiceFactory = new MenuServiceFactory();
-  private started = false;
+  private readonly notificationService: NotificationService;
   private app: Application;
   private server: Server;
   private io: SocketIO.Server;
   private menuServices?: MenuService[];
 
   constructor(private options: ICommandOptions) {
+    this.notificationService = new NotificationService(options);
     this.port = options.port;
     this.app = express();
     this.app.use(cors());
@@ -32,7 +33,6 @@ export class App {
     if (options.watch) {
       const watcher = chokidar.watch(options.file, { persistent: true });
       watcher
-        .on('add', () => this.createMenus(true))
         .on('change', () => this.createMenus(true))
         .on('delete', () => process.exit(2));
     }
@@ -41,10 +41,26 @@ export class App {
   private createMenus(reload = false) {
     if (reload) {
       console.info('Menu configuration updated... reloading...');
+      this.notificationService.removeAllListeners();
+      if (this.menuServices && this.menuServices.length > 0) {
+        // Tear down the services:
+        this.menuServices.forEach(ms => ms.destroy());
+        this.menuServiceFactory.destroy();
+      }
     }
-    this.menuServices = this.menuServiceFactory.create(this.options.file, this.app);
+    this.menuServices = this.menuServiceFactory.create(this.options.file, this.app, this.notificationService);
+    this.menuServices.forEach((ms) => ms.on('MenuUpdated', (menuId: string) => {
+      console.log(`Menu ${menuId} updated... notifying clients.`);
+      this.io.emit('MenuUpdated', menuId);
+    }));
     if (this.menuServices) {
-      this.app.get('/menus', (req: Request, res: Response) => this.menuServices ? res.json(this.menuServices.map(ms => ms.id)) : res.status(500).write('No menus have been defined!') );
+      this.app.get(
+        '/menus',
+        (_req: Request, res: Response) =>
+          this.menuServices
+            ? res.json(this.menuServices.map((ms) => ({ id: ms.id, title: ms.title })))
+            : res.status(500).write('No menus have been defined!')
+      );
     }
   }
 

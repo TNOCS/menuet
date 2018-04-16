@@ -3,22 +3,27 @@ import { MenuService } from './menu-service';
 
 export class RestService {
   private route: string;
+  private menuId: string;
 
   constructor(app: Application, menuService: MenuService) {
-    this.route = `/${menuService.id}`;
-    app.get(this.route, (req: Request, res: Response) => {
+    this.menuId = menuService.id;
+    this.route = `/menus/${menuService.id}`;
+    app.get(this.route, (_req: Request, res: Response) => {
       res.json(menuService.ui);
     });
-    app.put(`${this.route}?:menuId`, (req: Request, res: Response) => {
-      const menuId = req.params['menuId'];
-      if (!menuId) {
-        return res.status(500).write('Please provide menuId');
+    app.put(`${this.route}/:menuItemId`, (req: Request, res: Response) => {
+      const menuItemId = req.params['menuItemId'];
+      console.log(`Accessing menu ${this.menuId}/${menuItemId}...`);
+      if (!menuItemId) {
+        res.status(500).write('Please provide menuItemId');
+        return;
       }
-      menuService.activateMenuItem(menuId, (error, data) => {
+      menuService.activateMenuItem(menuItemId, (error, _data) => {
         if (error) {
-          return res.status(500).write('Error processing activation: ' + error.message);
+          res.status(500).write('Error processing activation: ' + error.message);
+          return;
         }
-        res.json(menuService.ui);
+        res.sendStatus(200);
       });
     });
   }

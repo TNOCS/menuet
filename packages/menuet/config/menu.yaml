@@ -25,43 +25,48 @@ menus:
         title: Access the Power Grid
       - id: power.lights_off
         groupId: power
-        title: Turn off the street lights
+        title: Switch off the street lights
         isVisible: false
         actions: power.lights_off
         conditions:
           - eventId: power.grid
-          - eventId: power.lights_on
+          - eventId: event.power_on
       - id: power.lights_on
         groupId: power
-        title: Turn on the street lights
+        title: Switch on the street lights
         isVisible: false
         actions: power.lights_on
         conditions:
-          - eventId: power.lights_on
+          - eventId: event.power_off
+      - id: power.lights_auto
+        groupId: power
+        title: Switch street lights to auto
+        isVisible: false
+        actions: power.lights_auto
+        multiple: -1
+        conditions:
+          - eventId: power.grid
       - id: security.access
         groupId: security
         title: Get access to the local network
-        isVisible: false
-        conditions:
-          - eventId: security.scanned_networks
-            eventType: Inject
+        actions: security.hack_network
       - id: security.camera_off
         groupId: security
-        title: Turn off the security cameras
+        title: Switch off the security cameras
         isVisible: false
         multiple: -1
         actions: security.camera_off
         conditions:
-          - eventId: security.access
-          - eventId: security.camera_on
+          - eventId: event.local_network_hack_on
+          - eventId: event.camera_on
       - id: security.camera_on
         groupId: security
-        title: Turn on the security cameras
+        title: Switch on the security cameras
         isVisible: false
         multiple: -1
         actions: security.camera_on
         conditions:
-          - eventId: security.camera_on
+          - eventId: event.camera_off
   - id: social_media
     title: Social media analysis
     description: GUI for social media analysts supporting a mission
@@ -74,51 +79,94 @@ menus:
         description: Analysing specific people
     menuItems:
       - id: global.scan
-        group: global
+        groupId: global
         title: Perform mood scan
         actions: global.scan
       - id: personal.principal
+        groupId: personal
         title: Investigate principal of facility
+        isVisible: false
         actions: personal.principal
+        conditions:
+          - eventId: city.hr
       - id: personal.prisonguard
+        groupId: personal
         title: Investigate prison guard of facility
+        isVisible: false
         actions: personal.prisonguard
-
+        conditions:
+          - eventId: city.hr
 
 actions:
-  - id: power.lights_off
-    description: Turn the street lights in VBS3 off
-    timeout: 1
+  - id: security.hack_network
+    description: Hack the local network
+    timeout: 10
     result:
-      response: Lights are turned off
       message:
-        type: Inject
-        eventId: power.lights
-        mode: false
-  - id: power.lights_on
-    description: Turn the street lights in VBS3 on
-    timeout: 1
-    result:
-      response: Lights are turned on
-      message:
-        type: Inject
-        eventId: power.lights
-        mode: true
+        response: Local network is being hacked
+        group: PrisonNetwork
+        type: ON
+      event:
+        response: Local network is hacked
+        status: SUCCEEDED
+        eventId: event.local_network_hack_on
   - id: security.camera_off
-    description: Turn the security camera off
-    timeout: 1
+    description: Switch the security camera off
+    timeout: 10
     result:
-      response: Security camera turned off
       message:
-        type: Inject
-        eventId: security.camera
-        mode: false
+        response: Security camera is being switched off
+        group: Camera
+        type: OFF
+      event:
+        status: SUCCEEDED
+        response: Security camera is switched off
+        eventId: event.camera_off
   - id: security.camera_on
-    description: Turn the security camera on
-    timeout: 1
+    description: Switch the security camera on
+    timeout: 100
     result:
-      response: Security camera turned on
       message:
-        type: Inject
-        eventId: security.camera
-        mode: true
+        response: Security camera is being switched on
+        group: Camera
+        type: ON
+      event:
+        status: SUCCEEDED
+        response: Security camera switched on
+        eventId: event.camera_on
+  - id: power.lights_off
+    description: Switch the street lights in VBS3 off
+    timeout: 10
+    result:
+      message:
+        response: Lights are being switched off
+        group: MnhznAll
+        type: OFF
+      event:
+        response: Lights are switched off
+        status: SUCCEEDED
+        eventId: event.power_off
+  - id: power.lights_on
+    description: Switch the street lights in VBS3 on
+    timeout: 10
+    result:
+      message:
+        response: Lights are being switched off
+        group: MnhznAll
+        type: ON
+      event:
+        response: Lights are switched off
+        status: SUCCEEDED
+        eventId: event.power_on
+  - id: power.lights_auto
+    description: Switch the street lights in VBS3 to auto mode
+    timeout: 10
+    result:
+      message:
+        response: Lights are being switched to auto mode
+        group: MnhznAll
+        type: Auto
+      event:
+        response: Lights are switched to auto mode
+        status: SUCCEEDED
+        eventId: event.power_auto

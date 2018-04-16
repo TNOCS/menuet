@@ -10,35 +10,21 @@
       "doc": "Unique identifier of the Action Request"
     },
     {
-      "name": "type",
-      "doc": "test",
+      "name": "group",
+      "doc": "VBS map entity group to apply the request to",
       "type": {
-        "name": "RequestType",
+        "name": "RequestGroup",
         "type": "enum",
-        "symbols": [ "OPEN", "CLOSE", "ENABLE", "DISABLE" ]
+        "symbols": [ "MnhznWest", "MnhznCentrum", "MnhznZuid", "MnhznOost", "MnhznAll", "Camera", "PrisonNetwork" ]
       }
     },
     {
-      "name": "entityId",
-      "doc": "DIS/RPR Entity Identifier struct of the target Entity for this request",
+      "name": "type",
+      "doc": "type of request",
       "type": {
-        "name": "EntityId",
-        "doc": "DIS/RPR Entity ID struct",
-        "type": "record",
-        "fields": [
-          {
-            "name": "siteId",
-            "type": "int"
-          },
-          {
-            "name": "applicationId",
-            "type": "int"
-          },
-          {
-            "name": "entityId",
-            "type": "int"
-          }
-        ]
+        "name": "RequestType",
+        "type": "enum",
+        "symbols": [ "ON", "OFF", "AUTO" ]
       }
     }
   ]

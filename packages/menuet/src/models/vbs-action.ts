@@ -1,17 +1,24 @@
-export enum RequestTypeEnum {
-  OPEN,
-  CLOSE,
-  ENABLE,
-  DISABLE
+export const enum RequestType {
+  On = 'ON',
+  Off = 'OFF',
+  Auto = 'Auto'
 }
 
-export enum RequestStatus {
-  SUCCEEDED,
-  FAILED,
-  PENDING
+export const enum RequestStatus {
+  Succeeded = 'SUCCEEDED',
+  Failed = 'FAILED',
+  Pending = 'PENDING'
 }
 
-export type RequestType = keyof typeof RequestTypeEnum;
+export const enum RequestGroup {
+  MnhznWest = 'MnhznWest',
+  MnhznCentrum = 'MnhznCentrum',
+  MnhznZuid = 'MnhznZuid',
+  MnhznOost = 'MnhznOost',
+  MnhznAll = 'MnhznAll',
+  Camera = 'Camera',
+  PrisonNetwork = 'PrisonNetwork'
+}
 
 export type RequestStatusType = keyof typeof RequestStatus;
 
@@ -28,8 +35,7 @@ export interface IEntityId {
 export interface IActionRequest {
   /** Unique identifier of the Action Request */
   requestId: number;
-  /** DIS/RPR Entity Identifier struct of the target Entity for this request */
-  entityId: IEntityId;
+  group: RequestGroup;
   type: RequestType;
 }
 

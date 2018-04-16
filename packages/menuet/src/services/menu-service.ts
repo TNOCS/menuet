@@ -1,33 +1,46 @@
-import { ICondition } from './../menu/condition';
 import { IMenuItem } from './../menu/menu-item';
 import { IMenuGroup } from './../menu/menu-group';
 import { IMenu } from './../menu/menu';
 import { ActionService } from './action-service';
-import { EventType } from '../menu/message';
 import { clone } from '../helpers/utils';
+import { EventEmitter } from 'events';
 
-export class MenuService {
+export declare interface MenuService {
+  on(event: 'MenuUpdated', listener: (id: string) => void): this;
+}
+
+export class MenuService extends EventEmitter {
   private uiState: IMenuGroup[];
-  private activeGroup?: IMenuGroup;
-  private activeItem?: IMenuItem;
-  private activeResult: any;
+  // private activeGroup?: IMenuGroup;
+  // private activeItem?: IMenuItem;
+  // private activeResult: any;
   /** The menu is performing some action, and cannot be used */
   private isProcessing = false;
   /** The processing can be cancelled */
   private canCancel?: boolean;
   /** Remaining processing time */
   private processingDone?: Date;
-  /** Keep a log for debugging purposes */
-  private log: string[] = [];
   /** Timer handle */
   private handle?: NodeJS.Timer;
 
   constructor(private menu: IMenu, private actionService: ActionService) {
+    super();
     this.uiState = this.createGUI(menu);
     actionService.on('MenuItemActivated', (id) => this.menuItemActivated(id));
+    actionService.on('EventReceived', (eventId) => this.menuItemActivated(eventId));
   }
 
-  public get id() { return this.menu.id; }
+  public destroy() {
+    this.actionService.removeAllListeners();
+  }
+
+  public get id() {
+    return this.menu.id;
+  }
+
+  public get title() {
+    return this.menu.title;
+  }
 
   public get ui() {
     return {
@@ -46,6 +59,10 @@ export class MenuService {
     if (!menuItem) {
       cb && cb(Error(`MenuItem with id ${menuId} cannot be found!`));
       return;
+    }
+    if (menuItem.multiple) {
+      menuItem.multiple--;
+      if (menuItem.multiple === 0) { menuItem.isVisible = false; }
     }
     const { canCancel, timeout } = this.actionService.activateMenuItem(menuItem);
     this.canCancel = canCancel;
@@ -77,6 +94,7 @@ export class MenuService {
   }
 
   private menuItemActivated(id: string) {
+    let update = false;
     this.uiState.forEach(
       (g) =>
         g.children &&
@@ -85,21 +103,31 @@ export class MenuService {
             return;
           }
           const conditions = mi.conditions instanceof Array ? mi.conditions : [ mi.conditions ];
-          mi.isVisible = conditions.reduce(
-            (p, c) => p || (c.eventId === id && (c.event ? c.event === 'Activated' : true)),
+          const match = conditions.reduce(
+            (p, c) => p || (c.eventId === id),
             false
           );
+          if (match) {
+            update = true;
+            console.log(`Activated menu item: ${mi.title}.`);
+            mi.isVisible = true;
+          }
         })
     );
+    if (update) { this.emit('MenuUpdated', this.menu.id); }
   }
 
   private getMenuItemById(menuId: string) {
-    return this.uiState.reduce(
-      (p, c) => {
-        return p || (c.children && c.children.filter((mi) => mi.id === menuId).shift());
-      },
-      {} as IMenuItem
-    );
+    return this.uiState
+      .reduce(
+        (p, c) => {
+          c.children && p.push(...c.children);
+          return p;
+        },
+        [] as Array<IMenuItem>
+      )
+      .filter((mi) => mi.id === menuId)
+      .shift();
   }
 
   /** Create the GUI from scratch */

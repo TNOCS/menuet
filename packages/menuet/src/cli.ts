@@ -22,6 +22,8 @@ export interface ICommandOptions {
   help: boolean;
   /** Watch the menu configuration for updates */
   watch: boolean;
+  /** Automatically register all schemas in the ./schemas folder */
+  schemas: boolean;
 }
 
 export class CommandLineInterface {
@@ -32,6 +34,14 @@ export class CommandLineInterface {
       type: Boolean,
       typeLabel: '{underline Boolean}',
       description: 'Show help text.'
+    },
+    {
+      name: 'schemas',
+      alias: 's',
+      type: Boolean,
+      defaultValue: false,
+      typeLabel: '{underline Boolean}',
+      description: 'Automatically register the schemas in the "./schemas" folder.'
     },
     {
       name: 'file',
@@ -46,7 +56,7 @@ export class CommandLineInterface {
       name: 'consume',
       alias: 'i',
       type: String,
-      defaultValue: 'menuet-in',
+      defaultValue: 'vbs_action_response',
       typeLabel: '{underline String}',
       description: 'Topic to consume messages from.'
     },
@@ -54,7 +64,7 @@ export class CommandLineInterface {
       name: 'produce',
       alias: 'o',
       type: String,
-      defaultValue: 'menuet-out',
+      defaultValue: 'vbs_action_request',
       typeLabel: '{underline String}',
       description: 'Topic to consume messages from.'
     },

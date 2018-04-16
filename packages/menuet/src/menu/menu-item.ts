@@ -1,4 +1,3 @@
-import { IAction } from './action';
 import { ICondition } from './condition';
 
 export interface IMenuItem {

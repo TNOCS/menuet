@@ -54,7 +54,7 @@ menus:
         groupId: security
         title: Switch off the security cameras
         isVisible: false
-        multiple: -1
+        multiple: 1
         actions: security.camera_off
         conditions:
           - eventId: event.local_network_hack_on
@@ -63,7 +63,7 @@ menus:
         groupId: security
         title: Switch on the security cameras
         isVisible: false
-        multiple: -1
+        multiple: 1
         actions: security.camera_on
         conditions:
           - eventId: event.camera_off

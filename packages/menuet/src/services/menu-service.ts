@@ -111,6 +111,9 @@ export class MenuService extends EventEmitter {
             update = true;
             console.log(`Activated menu item: ${mi.title}.`);
             mi.isVisible = true;
+            if (mi.multiple === 0) {
+              mi.multiple = 1;
+            }
           }
         })
     );

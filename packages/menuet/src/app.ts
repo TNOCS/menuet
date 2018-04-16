@@ -16,20 +16,16 @@ export class App {
   private readonly port: number;
   private readonly menuServiceFactory = new MenuServiceFactory();
   private readonly notificationService: NotificationService;
-  private app: Application;
-  private server: Server;
-  private io: SocketIO.Server;
+  private app!: Application;
+  private server!: Server;
+  private io!: SocketIO.Server;
   private menuServices?: MenuService[];
 
   constructor(private options: ICommandOptions) {
     this.notificationService = new NotificationService(options);
     this.port = options.port;
-    this.app = express();
-    this.app.use(cors());
-    this.server = createServer(this.app);
-    this.io = socketIO(this.server);
+    this.initServer();
     this.createMenus();
-    this.listen();
     if (options.watch) {
       const watcher = chokidar.watch(options.file, { persistent: true });
       watcher
@@ -38,8 +34,18 @@ export class App {
     }
   }
 
+  private initServer() {
+    this.app = express();
+    this.app.use(cors());
+    this.server = createServer(this.app);
+    this.io = socketIO(this.server);
+    this.listen();
+  }
+
   private createMenus(reload = false) {
     if (reload) {
+      this.server.close();
+      this.initServer();
       console.info('Menu configuration updated... reloading...');
       this.notificationService.removeAllListeners();
       if (this.menuServices && this.menuServices.length > 0) {

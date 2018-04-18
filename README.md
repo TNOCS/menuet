@@ -3,10 +3,20 @@ A client-server application for serving dynamic menus - created to simulate the 
 
 ## Install globally
 
-`npm i -g menuet`
+`npm i -g menuet-server`
 
 ## Run
 
-`menuet -r -k localhost:3052 -s localhost:3051`
+`menuet-server -r -k localhost:3052 -s localhost:3051`
+
+-r is only needed if you want to publish some default schema's to Apache Kafka (using the [DRIVER+ test-bed](https://github.com/DRIVER-EU/test-bed)).
 
 ## Build
+
+`npm install`
+
+and use
+
+`npm run serve`
+
+to start the dev servers.

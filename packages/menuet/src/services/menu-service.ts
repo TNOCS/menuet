@@ -94,7 +94,6 @@ export class MenuService extends EventEmitter {
   }
 
   private menuItemActivated(id: string) {
-    let update = false;
     this.uiState.forEach(
       (g) =>
         g.children &&
@@ -108,7 +107,6 @@ export class MenuService extends EventEmitter {
             false
           );
           if (match) {
-            update = true;
             console.log(`Activated menu item: ${mi.title}.`);
             mi.isVisible = true;
             if (mi.multiple === 0) {
@@ -117,7 +115,7 @@ export class MenuService extends EventEmitter {
           }
         })
     );
-    if (update) { this.emit('MenuUpdated', this.menu.id); }
+    this.emit('MenuUpdated', this.menu.id);
   }
 
   private getMenuItemById(menuId: string) {

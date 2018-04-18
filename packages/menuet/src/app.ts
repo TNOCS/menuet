@@ -60,7 +60,7 @@ export class App {
     }
     this.io.close(() => {
       console.info('Socket closed... closing server');
-      this.server.removeAllListeners()
+      this.server.removeAllListeners();
       this.server.close(() => {
         console.info('Server closed... restarting...');
         this.menuServiceFactory = new MenuServiceFactory();

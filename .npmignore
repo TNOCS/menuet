@@ -1,4 +1,9 @@
 .vscode
+.editorconfig
+.gitignore
 node_modules
 packages/menuet-gui
 lerna.json
+package-lock.json
+yarn.lock
+yarn-error.log

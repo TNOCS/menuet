@@ -1,3 +1,4 @@
+import path from 'path';
 import express, { Application, Request, Response } from 'express';
 import socketIO from 'socket.io';
 import cors from 'cors';
@@ -36,6 +37,8 @@ export class App {
   private initServer() {
     this.app = express();
     this.app.use(cors());
+    this.app.use(express.static(path.join(__dirname, '../public')));
+    this.app.use(express.json());
     this.server = createServer(this.app);
     this.io = socketIO(this.server);
     this.listen();

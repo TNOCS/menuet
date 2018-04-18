@@ -50,9 +50,9 @@
     "@types/command-line-usage": "^5.0.0",
     "@types/cors": "^2.8.3",
     "@types/express": "^4.11.1",
-    "@types/node": "^9.6.2",
+    "@types/node": "^9.6.5",
     "@types/socket.io": "^1.4.33",
-    "tsc-watch": "^1.0.19",
+    "tsc-watch": "^1.0.21",
     "typescript": "^2.8.1"
   }
 }

@@ -14,8 +14,8 @@ const log = console.log;
 export class App {
   /** Port number where the service listens for clients */
   private readonly port: number;
-  private readonly menuServiceFactory = new MenuServiceFactory();
   private readonly notificationService: NotificationService;
+  private menuServiceFactory = new MenuServiceFactory();
   private app!: Application;
   private server!: Server;
   private io!: SocketIO.Server;
@@ -25,11 +25,10 @@ export class App {
     this.notificationService = new NotificationService(options);
     this.port = options.port;
     this.initServer();
-    this.createMenus();
     if (options.watch) {
       const watcher = chokidar.watch(options.file, { persistent: true });
       watcher
-        .on('change', () => this.createMenus(true))
+        .on('change', () => this.reset())
         .on('delete', () => process.exit(2));
     }
   }
@@ -40,20 +39,34 @@ export class App {
     this.server = createServer(this.app);
     this.io = socketIO(this.server);
     this.listen();
+    this.app.post('/reset', (_req: Request, res: Response) => {
+      res.sendStatus(200);
+      this.reset();
+    });
+    this.createMenus();
   }
 
-  private createMenus(reload = false) {
-    if (reload) {
-      this.server.close();
-      this.initServer();
-      console.info('Menu configuration updated... reloading...');
-      this.notificationService.removeAllListeners();
-      if (this.menuServices && this.menuServices.length > 0) {
-        // Tear down the services:
-        this.menuServices.forEach(ms => ms.destroy());
-        this.menuServiceFactory.destroy();
-      }
+  private reset() {
+    console.info('Menu configuration reset... quiting...');
+    this.notificationService.removeAllListeners();
+    if (this.menuServices && this.menuServices.length > 0) {
+      // Tear down the services:
+      this.menuServices.forEach(ms => ms.destroy());
+      this.menuServiceFactory.destroy();
+      this.menuServices = [];
     }
+    this.io.close(() => {
+      console.info('Socket closed... closing server');
+      this.server.removeAllListeners()
+      this.server.close(() => {
+        console.info('Server closed... restarting...');
+        this.menuServiceFactory = new MenuServiceFactory();
+        this.initServer();
+      });
+    });
+  }
+
+  private createMenus() {
     this.menuServices = this.menuServiceFactory.create(this.options.file, this.app, this.notificationService);
     this.menuServices.forEach((ms) => ms.on('MenuUpdated', (menuId: string) => {
       console.log(`Menu ${menuId} updated... notifying clients.`);

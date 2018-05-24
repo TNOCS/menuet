@@ -14,9 +14,16 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}\\index.js",
+      "program": "${workspaceFolder}\\src\\cli.ts",
+      "args": [
+        "-s",
+        "-k",
+        "192.168.188.29:3501",
+        "-r",
+        "192.168.188.29:3502"
+      ],
       "outFiles": [
-        "${workspaceFolder}/**/*.js"
+        "${workspaceFolder}/dist/**/*.js"
       ]
     }
   ]
